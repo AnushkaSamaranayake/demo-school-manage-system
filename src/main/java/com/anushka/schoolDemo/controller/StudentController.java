@@ -4,6 +4,7 @@ package com.anushka.schoolDemo.controller;
 import com.anushka.schoolDemo.dto.CourseResponse;
 import com.anushka.schoolDemo.dto.StudentCreateRequest;
 import com.anushka.schoolDemo.dto.StudentResponse;
+import com.anushka.schoolDemo.dto.StudentUpdateRequest;
 import com.anushka.schoolDemo.service.EnrollmentService;
 import com.anushka.schoolDemo.service.StudentService;
 import jakarta.validation.Valid;
@@ -43,5 +44,13 @@ public class StudentController {
     @GetMapping("{id}/courses")
     public List<CourseResponse> getCoursesOfStudent(@PathVariable Long id) {
         return enrollmentService.getCoursesOfStudent(id);
+    }
+
+    @PutMapping("/{id}")
+    public StudentResponse updateStudent(
+            @PathVariable Long id,
+            @Valid @RequestBody StudentUpdateRequest request
+    ) {
+        return studentService.updateStudent(id, request);
     }
 }

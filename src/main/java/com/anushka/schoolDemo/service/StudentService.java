@@ -3,13 +3,16 @@ package com.anushka.schoolDemo.service;
 import com.anushka.schoolDemo.dto.CourseResponse;
 import com.anushka.schoolDemo.dto.StudentCreateRequest;
 import com.anushka.schoolDemo.dto.StudentResponse;
+import com.anushka.schoolDemo.dto.StudentUpdateRequest;
 import com.anushka.schoolDemo.entity.Course;
 import com.anushka.schoolDemo.entity.Student;
 import com.anushka.schoolDemo.exception.ResourceNotFoundException;
 import com.anushka.schoolDemo.repository.EnrollmentRepository;
 import com.anushka.schoolDemo.repository.StudentRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -42,6 +45,7 @@ public class StudentService {
         student.setLastName(request.getLastName());
         student.setEmail(request.getEmail());
         student.setDateOfBirth(request.getDateOfBirth());
+        student.setUpdatedOn(LocalDate.now());
 
         Student saved = studentRepository.save(student);
         return toResponse(saved);
@@ -65,5 +69,18 @@ public class StudentService {
         return studentRepository.count();
     }
 
+    @Transactional
+    public StudentResponse updateStudent(Long studentId, StudentUpdateRequest request) {
 
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
+
+        student.setFirstName(request.getFirstName());
+        student.setLastName(request.getLastName());
+        student.setEmail(request.getEmail());
+        student.setDateOfBirth(request.getDateOfBirth());
+        student.setUpdatedOn(LocalDate.now());
+
+        return toResponse(studentRepository.save(student));
+    }
 }
