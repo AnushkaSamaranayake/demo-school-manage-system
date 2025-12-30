@@ -6,12 +6,14 @@ import com.anushka.schoolDemo.dto.EnrollmentResponse;
 import com.anushka.schoolDemo.dto.StudentResponse;
 import com.anushka.schoolDemo.entity.Course;
 import com.anushka.schoolDemo.entity.Enrollment;
+import com.anushka.schoolDemo.entity.EnrollmentId;
 import com.anushka.schoolDemo.entity.Student;
 import com.anushka.schoolDemo.exception.ResourceNotFoundException;
 import com.anushka.schoolDemo.repository.CourseRepository;
 import com.anushka.schoolDemo.repository.EnrollmentRepository;
 import com.anushka.schoolDemo.repository.StudentRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +23,16 @@ public class EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
+
+    private EnrollmentResponse toResponse(Enrollment enrollment) {
+        return new EnrollmentResponse(
+                enrollment.getStudent().getStudentId(),
+                enrollment.getStudent().getFirstName() + " " + enrollment.getStudent().getLastName(),
+                enrollment.getCourse().getCourseId(),
+                enrollment.getCourse().getCourseName(),
+                enrollment.getEnrolledDate()
+        );
+    }
 
     public EnrollmentService(
             EnrollmentRepository enrollmentRepository,
@@ -57,6 +69,13 @@ public class EnrollmentService {
                 course.getCourseName(),
                 saved.getEnrolledDate()
         );
+    }
+
+    public List<EnrollmentResponse> getAllEnrollments() {
+        return enrollmentRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     public List<CourseResponse> getCoursesOfStudent(Long studentId){
@@ -97,5 +116,16 @@ public class EnrollmentService {
 
                 })
                 .toList();
+    }
+
+    @Transactional
+    public void uneroll(Long studentId, Long courseId){
+        EnrollmentId enrollmentId = new EnrollmentId(studentId, courseId);
+
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found for student id: " + studentId +
+                        " and course id: " + courseId));
+
+        enrollmentRepository.delete(enrollment);
     }
 }

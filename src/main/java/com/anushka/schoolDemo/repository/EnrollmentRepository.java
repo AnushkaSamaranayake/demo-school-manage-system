@@ -15,4 +15,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollme
 
     List<Enrollment> findByStudentStudentId(Long StudentId);
     List<Enrollment> findByCourseCourseId(Long CourseId);
+
+    void deleteBy(EnrollmentId id);
 }
