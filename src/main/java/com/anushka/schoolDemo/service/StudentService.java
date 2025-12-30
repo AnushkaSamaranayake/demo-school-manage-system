@@ -83,4 +83,17 @@ public class StudentService {
 
         return toResponse(studentRepository.save(student));
     }
+
+    @Transactional
+    public void deleteStudent(Long studentId) {
+        if (!studentRepository.existsById(studentId)) {
+            throw new ResourceNotFoundException("Student not found with id: " + studentId);
+        }
+
+        // First, delete all enrollments associated with the student
+        enrollmentRepository.deleteByStudentStudentId(studentId);
+
+        // Then, delete the student
+        studentRepository.deleteById(studentId);
+    }
 }
