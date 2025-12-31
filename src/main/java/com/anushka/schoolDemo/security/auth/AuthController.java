@@ -14,13 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final AuthService authService;
 
     public AuthController(
             AuthenticationManager authenticationManager,
-            JwtUtil jwtUtil
+            JwtUtil jwtUtil,
+            AuthService authService
     ) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil= jwtUtil;
+        this.authService = authService;
     }
 
     @PostMapping("/login")
@@ -38,5 +41,10 @@ public class AuthController {
                 .getAuthority();
 
         return jwtUtil.generateToken(request.getUsername(), role);
+    }
+
+    @PostMapping("/register")
+    public void register(@RequestBody RegisterRequest request) {
+        authService.register(request);
     }
 }
