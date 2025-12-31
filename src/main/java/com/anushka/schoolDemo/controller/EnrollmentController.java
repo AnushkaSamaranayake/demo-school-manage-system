@@ -29,6 +29,7 @@ public class EnrollmentController {
         return enrollmentService.getAllEnrollments();
     }
 
+    // (DELETE /api/enrollments?studentId=1&courseId=2)
     @DeleteMapping
     public void unenroll(
             @RequestParam Long studentId,
